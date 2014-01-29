@@ -6,26 +6,27 @@ A boilerplate for **Node.js** web applications - with Angular JS.
 No live demo yet..
 
 I really like the work by Sahat Yalkabov with https://github.com/sahat/hackathon-starter
-Even though I know there are several node-express-angular-mongodb boilerplates out there, here's my contribution. I wanted to be able to mix Angular and static pages in a single site. Also I prefer to split Angular actions in to separate modules.
+Even though I know there are several node-express-angular-mongodb boilerplates out there, here's my contribution. I wanted to be able to mix Angular and static pages in a single site. Also, I prefer to split Angular actions into separate modules.
 
-Routes are by default static and serve jade templates. To "angularify" a route:
+### Routes are by default static and serve jade templates. To "angularify" a route:
 1. Create an angular module for it (see public/js/modules.api.js)
-angular.module('myApp.modules.api', [])
+... angular.module('myApp.modules.api', [])
 ...
-$routeProvider
-  .when('/api', {
-	templateUrl: 'views/api.html',
-...
-2. Add angularApp to the view data of the route's callback as such
-exports.getApi = function(req, res) {
-  res.render('api/index', {
-    title: 'API Browser'
-	  ,angularApp: 'myApp'
-  });
-};
-3. Create an HTML partial in public/views/ which Angular can deliver
+...$routeProvider
+... .when('/api', {
+...	templateUrl: 'views/api.html',
 
-This way legacy browsers and crawlers will be served static HTML while newer browsers will show your interactive HTML 5 web app.
+2. Create an HTML partial in public/views/ which Angular can deliver
+
+3. Add angularApp to the view data of the route's callback as such
+... exports.getApi = function(req, res) {
+...   res.render('api/index', {
+...   title: 'API Browser'
+...	  ,angularApp: 'myApp'
+...  });
+... };
+
+Legacy browsers and crawlers will still be served static HTML while newer browsers will show your interactive HTML 5 web app.
 
 
 License
