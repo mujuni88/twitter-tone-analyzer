@@ -1,5 +1,5 @@
 doctype html
-html
+html(data-ng-app=angularApp)
   head
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
@@ -14,13 +14,10 @@ html
 
     link(href='/css/styles.css?v=#{cacheBuster}', rel='stylesheet')
 
-    script(src='/js/lib/jquery.js?v=#{cacheBuster}')
-    script(src='/js/lib/bootstrap.js?v=#{cacheBuster}')
-    script(src='/js/main.js?v=#{cacheBuster}')
   body
     #wrap
       include partials/navigation
-      .container
+      .container(data-ng-view)
         include partials/flash
         block content
     include partials/footer

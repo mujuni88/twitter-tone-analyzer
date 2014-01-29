@@ -19,6 +19,7 @@ var expressValidator = require('express-validator');
 var homeController = require('./controllers/home');
 var userController = require('./controllers/user');
 var apiController = require('./controllers/api');
+var itemController = require('./controllers/item');
 var contactController = require('./controllers/contact');
 
 /**
@@ -117,6 +118,16 @@ app.get('/auth/foursquare', passport.authorize('foursquare'));
 app.get('/auth/foursquare/callback', passport.authorize('foursquare', { failureRedirect: '/api' }), function(req, res) { res.redirect('/api/foursquare'); });
 app.get('/auth/tumblr', passport.authorize('tumblr'));
 app.get('/auth/tumblr/callback', passport.authorize('tumblr', { failureRedirect: '/api' }), function(req, res) { res.redirect('/api/tumblr'); });
+
+/**
+ * Sample crud
+ */
+
+app.get('/api/item', itemController.getItems);
+app.get('/api/item/:id', itemController.getItem);
+app.post('/api/item', itemController.postItem);
+app.delete('/api/item/:id', itemController.deleteItem);
+
 
 app.listen(app.get('port'), function() {
   console.log('✔ Express server listening on port ' + app.get('port'));

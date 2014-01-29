@@ -21,6 +21,7 @@ var paypal = require('paypal-rest-sdk');
 exports.getApi = function(req, res) {
   res.render('api/index', {
     title: 'API Browser'
+	  ,angularApp: 'myApp'
   });
 };
 
