@@ -12,8 +12,7 @@ block content
             .input-group
               input.form-control(type='text', placeholder='Search for a topic... MSU, DebateNight, Saints, Les Miles',ng-model="hm.query", enter-submit="hm.analyze(hm.query)",)
               span.input-group-btn
-                //button.btn.btn-default(type='button', ng-click="hm.analyze(hm.query)", ng-class="{disabled:!hm.query || hm.query.length < 5}") Go!
-                button.btn.btn-default(type='button', ng-click="hm.analyze(hm.query)" ng-focus="hm.form = null", ng-hide="hm.isLoading") Go!
+                button.btn.btn-default(type='button', ng-click="hm.analyze(hm.query)" ng-focus="hm.form = null", ng-hide="hm.isLoading", ng-class="{disabled:!hm.query || hm.query.length < 5}) Go!
                 button.btn.btn-default(ng-show="hm.isLoading")
                   i.fa.fa-spinner.fa-spin
     .container(ng-if="hm.form && !hm.isLoading")
@@ -54,4 +53,13 @@ block content
               |  Sign In
           |  to begin.
 
+    .container
+      .row
+        .col-sm-6.col-sm-offset-3
+          p.text-center Say you want to find out how people reacted to the<b>"DebateNight"</b><br>Below would be a sample analysis:
+          section(ng-repeat="tone in hm.dummyTones")
+            p {{tone.tone_name}}
+            .progress
+              .progress-bar(ng-class="hm.getToneClass(tone.tone_id)", ng-style='hm.getScore(tone.score)')
+              span.sr-only {{tone.tone_name}}
           

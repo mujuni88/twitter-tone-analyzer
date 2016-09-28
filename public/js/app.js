@@ -14,6 +14,33 @@ function HomeCtrl($scope, $http) {
     vm.getToneClass = getToneClass;
     vm.getScore = getScore;
     vm.isLoading = false;
+    vm.dummyTones = [
+        {
+            "score": 0.515005,
+            "tone_id": "anger",
+            "tone_name": "Anger"
+        },
+        {
+            "score": 0.022964,
+            "tone_id": "disgust",
+            "tone_name": "Disgust"
+        },
+        {
+            "score": 0.02921,
+            "tone_id": "fear",
+            "tone_name": "Fear"
+        },
+        {
+            "score": 0.508345,
+            "tone_id": "joy",
+            "tone_name": "Joy"
+        },
+        {
+            "score": 0.033378,
+            "tone_id": "sadness",
+            "tone_name": "Sadness"
+        }
+    ];
     
     function analyze(query){
         vm.isLoading = true;
