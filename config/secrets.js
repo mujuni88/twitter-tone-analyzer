@@ -1,5 +1,5 @@
 module.exports = {
-  db: process.env.MONGOLAB_URI | 'localhost',
+  db: process.env.MONGOLAB_URI || 'localhost',
 
   sendgrid: {
     user: 'Your SendGrid Username',
