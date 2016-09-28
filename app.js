@@ -121,7 +121,7 @@ app.get('/auth/tumblr', passport.authorize('tumblr'));
 app.get('/auth/tumblr/callback', passport.authorize('tumblr', { failureRedirect: '/api' }), function(req, res) { res.redirect('/api/tumblr'); });
 
 /**
- * Sample crud
+ * Sample crud 
  */
 
 app.get('/api/item', itemController.getItems);
