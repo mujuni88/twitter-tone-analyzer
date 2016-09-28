@@ -2,11 +2,11 @@
   .container
     .navbar-header
       button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
-        span.sr-only TA
+        span.sr-only TTA
         span.icon-bar
         span.icon-bar
         span.icon-bar
-      a.navbar-brand(href='/') TA
+      a.navbar-brand(href='/') TTA
     .collapse.navbar-collapse
       ul.nav.navbar-nav
         li(class=title=='Home'?'active':undefined, data-ng-class="{active: $location.path()=='/'}")
@@ -18,9 +18,11 @@
       ul.nav.navbar-nav.navbar-right
         if !user
           li(class=title=='Login'?'active':undefined)
-            a(href='/login',target='_self') Login
-          li(class=title=='Create Account'?'active':undefined)
-            a(href='/signup',target='_self') Create Account
+            a(href='/auth/twitter')
+              i.fa.fa-twitter
+              | Login
+          //li(class=title=='Create Account'?'active':undefined)
+          //  a(href='/signup',target='_self') Create Account
         else
           li.dropdown(class=title=='Account Management'?'active':undefined)
             a.dropdown-toggle(href='#', data-toggle='dropdown')

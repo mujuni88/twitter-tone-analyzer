@@ -4,13 +4,13 @@ block content
   if user
     .jumbotron
       .container
-        h1.text-center Tone Analyzer 
+        h1.text-center Twitter Tone Analyzer 
         p.text-center.lead
-         | Find out people's reactions to a topic on Twitter.
+         | A quick way to find out people's overall tone to a topic on Twitter.
         .row
           .col-sm-6.col-sm-offset-3
             .input-group
-              input.form-control(type='text', placeholder='Search for a Topic...',ng-model="hm.query", enter-submit="hm.analyze(hm.query)",)
+              input.form-control(type='text', placeholder='Search for a topic... MSU, DebateNight, Saints, Les Miles',ng-model="hm.query", enter-submit="hm.analyze(hm.query)",)
               span.input-group-btn
                 //button.btn.btn-default(type='button', ng-click="hm.analyze(hm.query)", ng-class="{disabled:!hm.query || hm.query.length < 5}") Go!
                 button.btn.btn-default(type='button', ng-click="hm.analyze(hm.query)" ng-focus="hm.form = null", ng-hide="hm.isLoading") Go!
@@ -25,7 +25,7 @@ block content
         h3.text-center Analysis:
         .col-sm-6.col-sm-offset-3
           section(ng-repeat="tone in hm.getTones(hm.form.tones)")
-            h3 {{tone.tone_name}}
+            p {{tone.tone_name}}
             .progress
               .progress-bar(ng-class="hm.getToneClass(tone.tone_id)", ng-style='hm.getScore(tone.score)')
               span.sr-only {{tone.tone_name}}
@@ -42,7 +42,16 @@ block content
                     small.text-muted  @{{tweet.user.screen_name}}
                     br
                     small {{tweet.text}}
+  else
+    .jumbotron
+      .container
+        h1.text-center Twitter Tone Analyzer 
+        p.text-center.lead
+          | A quick way to find out people's overall tone to a topic on Twitter.
+        p.text-center
+          a(href="/auth/twitter")
+            i.fa.fa-twitter
+              |  Sign In
+          |  to begin.
 
-
-          
           

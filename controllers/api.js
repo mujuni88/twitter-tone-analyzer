@@ -251,7 +251,7 @@ exports.getTwitter = function(req, res, next) {
   
   var query = req.params.query ? req.params.query : "#debatenight";
   console.log(query);
-  T.get('search/tweets', { q: query,result_type:'recent', count: 50 }, function(err, reply) {
+  T.get('search/tweets', { q: query,lang:'en',result_type:'mixed', count: 50 }, function(err, reply) {
     if (err) return next(err);
     req.tweets = reply.statuses;
     next();

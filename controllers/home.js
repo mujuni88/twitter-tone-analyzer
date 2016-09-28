@@ -5,6 +5,6 @@
 
 exports.index = function(req, res) {
   res.render('home', {
-    title: 'Tone Analyzer'
+    title: 'Twitter Tone Analyzer'
   });
 };

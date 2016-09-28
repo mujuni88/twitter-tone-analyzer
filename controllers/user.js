@@ -9,10 +9,7 @@ var User = require('../models/User');
  */
 
 exports.getLogin = function(req, res) {
-  if (req.user) return res.redirect('/');
-  res.render('account/login', {
-    title: 'Login'
-  });
+  res.redirect('/');
 };
 
 /**
@@ -23,7 +20,7 @@ exports.getLogin = function(req, res) {
  */
 
 exports.postLogin = function(req, res, next) {
-  req.assert('email', 'Email cannot be blank').notEmpty();
+  /*req.assert('email', 'Email cannot be blank').notEmpty();
   req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password cannot be blank').notEmpty();
 
@@ -46,7 +43,10 @@ exports.postLogin = function(req, res, next) {
       if (err) return next(err);
       return res.redirect('/');
     });
-  })(req, res, next);
+  })(req, res, next);*/
+
+  res.redirect('/');
+
 };
 
 /**
