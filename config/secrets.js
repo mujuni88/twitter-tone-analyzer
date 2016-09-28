@@ -1,5 +1,5 @@
 module.exports = {
-  db: process.env.MONGODB_URI || 'localhost',
+  db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'localhost',
 
   sendgrid: {
     user: 'Your SendGrid Username',
@@ -30,8 +30,8 @@ module.exports = {
   },
 
   twitter: {
-    consumerKey: 'SGq7xVsr6bah7Moa4OtPAsc70',
-    consumerSecret: '8UznXMMlkQi44bt9xzGa2oAtpacn1SbmFKPokCXiWgObgUyYXp',
+    consumerKey: process.env.TWITTER_KEY || 'SGq7xVsr6bah7Moa4OtPAsc70',
+    consumerSecret: process.env.TWITTER_SECRET || '8UznXMMlkQi44bt9xzGa2oAtpacn1SbmFKPokCXiWgObgUyYXp',
     callbackURL: '/auth/twitter/callback',
     passReqToCallback: true
   },
