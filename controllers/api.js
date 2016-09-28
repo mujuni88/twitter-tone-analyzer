@@ -20,7 +20,7 @@ var paypal = require('paypal-rest-sdk');
 
 exports.getApi = function(req, res) {
   res.render('api/index', {
-    title: 'API Browser'
+    title: 'Home'
 	  ,angularApp: 'myApp'
   });
 };
@@ -248,12 +248,13 @@ exports.getTwitter = function(req, res, next) {
     access_token: token.accessToken,
     access_token_secret: token.tokenSecret
   });
-  T.get('search/tweets', { q: 'hackathon since:2013-01-01', geocode: '40.71448,-74.00598,5mi', count: 50 }, function(err, reply) {
+  
+  var query = req.params.query ? req.params.query : "#debatenight";
+  console.log(query);
+  T.get('search/tweets', { q: query,result_type:'recent', count: 50 }, function(err, reply) {
     if (err) return next(err);
-    res.render('api/twitter', {
-      title: 'Twitter API',
-      tweets: reply.statuses
-    });
+    req.tweets = reply.statuses;
+    next();
   });
 };
 

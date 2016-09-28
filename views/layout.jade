@@ -1,5 +1,5 @@
 doctype html
-html(data-ng-app=angularApp)
+html(data-ng-app="myApp")
   head
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
@@ -7,17 +7,27 @@ html(data-ng-app=angularApp)
     meta(name='description', content='')
     meta(name='author', content='')
 
-    title #{title} - Starter Template for Bootstrap
+    title #{title}
 
     link(href='/css/lib/font-awesome.min.css?v=#{cacheBuster}', rel='stylesheet')
     link(href='/css/lib/animate.css?v=#{cacheBuster}', rel='stylesheet')
 
     link(href='/css/styles.css?v=#{cacheBuster}', rel='stylesheet')
+    
+    script(src='/js/lib/jquery.js?v=#{cacheBuster}')
+    script(src='/js/lib/bootstrap.js?v=#{cacheBuster}')
 
-  body
+    script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.12/angular.js")
+    script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.12/angular-route.min.js")
+    script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.12/angular-resource.min.js")
+
+    script(src="/js/app.js")
+    //script(src="/js/modules.home.js")
+
+  body(data-ng-controller="HomeCtrl as hm")
     #wrap
       include partials/navigation
-      .container(data-ng-view)
+      .container
         include partials/flash
-        block content
+      block content
     include partials/footer

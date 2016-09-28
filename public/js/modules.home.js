@@ -1,32 +1,17 @@
-(function (factory) {
-    'use strict';
-    if (typeof define === 'function' && define.amd) {
-        // Register as an anonymous AMD module:
-        define([
-            'jquery',
-            'angular'
-        ], factory);
-    } else {
-        factory();
-    }
-}(function () {
-    'use strict';
+(function () {
 
-    angular.module('myApp.modules.home', [])
-		
-		.controller('HomeCtrl', [
-			'$scope',
-			function ($scope) {
-			}])
-		.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
-			$routeProvider
-			  .when('/', {
-				templateUrl: 'views/home.html',
-				controller: 'HomeCtrl'
-			 })
-			  ;
-			$locationProvider.html5Mode(true);
-		}]);
+        angular.module('myApp', [])
+            .controller('HomeCtrl', HomeCtrl);
 
-	}
-));
+        function HomeCtrl($scope, $http) {
+            var vm = this;
+            $scope.hello = "HELLO WORLD";
+
+            function analyze(query){
+                $http.get('/api/twitter/' + query).
+                success(function(data) {
+                    $scope.form = data.post;
+                });
+            }
+        }
+    })();

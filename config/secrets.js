@@ -16,8 +16,8 @@ module.exports = {
   },
 
   facebook: {
-    clientID: 'Your App ID',
-    clientSecret: 'Your App Secret',
+    clientID: '625968294229228',
+    clientSecret: '5a8bd13756b366e9627c1ff5d448fcb1',
     callbackURL: '/auth/facebook/callback',
     passReqToCallback: true
   },
@@ -30,8 +30,8 @@ module.exports = {
   },
 
   twitter: {
-    consumerKey: 'Your Consumer Key',
-    consumerSecret: 'Your Consumer Secret',
+    consumerKey: 'SGq7xVsr6bah7Moa4OtPAsc70',
+    consumerSecret: '8UznXMMlkQi44bt9xzGa2oAtpacn1SbmFKPokCXiWgObgUyYXp',
     callbackURL: '/auth/twitter/callback',
     passReqToCallback: true
   },
@@ -61,5 +61,10 @@ module.exports = {
     client_secret: 'Your Client Secret',
     returnUrl: 'http://localhost:3000/api/paypal/success',
     cancelUrl: 'http://localhost:3000/api/paypal/cancel'
+  },
+  watson:{
+    "url": "https://gateway.watsonplatform.net/tone-analyzer/api",
+    "password": "iH2jiAeqzrYL",
+    "username": "7a25dd19-4344-416c-b73a-1a9f9680cade"
   }
 };

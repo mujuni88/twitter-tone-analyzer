@@ -1,15 +1,48 @@
 extends layout
 
-block content 
-  h1 Bootstrap starter template
-  p.lead
-   | Use this document as a way to quickly start any new project.
-   br
-   | All you get is this text and a mostly barebones HTML document.
-  p This is static content - no AngularJS involved
-
+block content
   if user
-    .alert.alert-success.animated.fadeInUp
-      i.fa.fa-check
-      strong Success!
-      |  You are logged in.
+    .jumbotron
+      .container
+        h1.text-center Tone Analyzer 
+        p.text-center.lead
+         | Find out people's reactions to a topic on Twitter.
+        .row
+          .col-sm-6.col-sm-offset-3
+            .input-group
+              input.form-control(type='text', placeholder='Search for a Topic...',ng-model="hm.query", enter-submit="hm.analyze(hm.query)",)
+              span.input-group-btn
+                //button.btn.btn-default(type='button', ng-click="hm.analyze(hm.query)", ng-class="{disabled:!hm.query || hm.query.length < 5}") Go!
+                button.btn.btn-default(type='button', ng-click="hm.analyze(hm.query)" ng-focus="hm.form = null", ng-hide="hm.isLoading") Go!
+                button.btn.btn-default(ng-show="hm.isLoading")
+                  i.fa.fa-spinner.fa-spin
+    .container(ng-if="hm.form && !hm.isLoading")
+      h3.text-center.lead
+        i.fa.fa-twitter(style='color: #4099ff')
+        | #{' '}Tweets containing <b>"{{hm.query}}"</b>
+        
+      .row
+        h3.text-center Analysis:
+        .col-sm-6.col-sm-offset-3
+          section(ng-repeat="tone in hm.getTones(hm.form.tones)")
+            h3 {{tone.tone_name}}
+            .progress
+              .progress-bar(ng-class="hm.getToneClass(tone.tone_id)", ng-style='hm.getScore(tone.score)')
+              span.sr-only {{tone.tone_name}}
+              
+        .col-sm-8.col-sm-offset-2
+          h2.text-center Tweets:
+          ul.list.list-unstyled
+            li(ng-repeat="tweet in hm.form.tweets")
+              .panel.panel-default
+                .panel-body
+                  .clearfix
+                    img.pull-left(ng-src='{{hm.getImageFromTweet(tweet)}}', width=50, height=50, style='margin-right: 10px')
+                    span {{ tweet.user.name }}
+                    small.text-muted  @{{tweet.user.screen_name}}
+                    br
+                    small {{tweet.text}}
+
+
+          
+          

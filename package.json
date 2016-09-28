@@ -5,6 +5,7 @@
     "async": "~0.2.10",
     "bcrypt-nodejs": "~0.0.3",
     "cheerio": "~0.13.1",
+    "connect-mongo": "~0.4.0",
     "express": "~3.4.8",
     "express-flash": "~0.0.2",
     "express-validator": "~1.0.1",
@@ -22,12 +23,15 @@
     "passport-local": "~0.1.6",
     "passport-oauth": "~1.0.0",
     "passport-twitter": "~1.0.2",
+    "paypal-rest-sdk": "~0.6.4",
     "request": "~2.33.0",
     "sendgrid": "~0.4.6",
     "tumblr.js": "~0.0.4",
     "twit": "~1.1.12",
     "underscore": "~1.5.2",
-    "paypal-rest-sdk": "~0.6.4",
-    "connect-mongo": "~0.4.0"
+    "watson-developer-cloud": "^2.4.4"
+  },
+  "scripts": {
+    "start": "nodemon app.js"
   }
 }

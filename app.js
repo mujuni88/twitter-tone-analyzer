@@ -21,6 +21,7 @@ var userController = require('./controllers/user');
 var apiController = require('./controllers/api');
 var itemController = require('./controllers/item');
 var contactController = require('./controllers/contact');
+var toneController = require('./controllers/tone-analyzer');
 
 /**
  * API keys + Passport configuration.
@@ -101,12 +102,12 @@ app.get('/api/scraping', apiController.getScraping);
 app.get('/api/github', passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getGithub);
 app.get('/api/lastfm', apiController.getLastfm);
 app.get('/api/nyt', apiController.getNewYorkTimes);
-app.get('/api/twitter', passportConf.isAuthenticated, apiController.getTwitter);
+app.get('/api/twitter/:query', passportConf.isAuthenticated, apiController.getTwitter, toneController.getToneAnalysis);
 app.get('/api/aviary', apiController.getAviary);
 app.get('/api/paypal', apiController.getPayPal);
 app.get('/api/paypal/success', apiController.getPayPalSuccess);
 app.get('/api/paypal/cancel', apiController.getPayPalCancel);
-app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email, user_about_me' }));
 app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }));
 app.get('/auth/github', passport.authenticate('github'));
 app.get('/auth/github/callback', passport.authenticate('github', { successRedirect: '/', failureRedirect: '/login' }));

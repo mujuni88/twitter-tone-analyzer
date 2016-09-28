@@ -1,20 +1,20 @@
-.navbar.navbar-default.navbar-fixed-top(data-ng-controller='NavigationCtrl')
+.navbar.navbar-default.navbar-fixed-top()
   .container
     .navbar-header
       button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
-        span.sr-only Toggle navigation
+        span.sr-only TA
         span.icon-bar
         span.icon-bar
         span.icon-bar
-      a.navbar-brand(href='/') Project name
+      a.navbar-brand(href='/') TA
     .collapse.navbar-collapse
       ul.nav.navbar-nav
         li(class=title=='Home'?'active':undefined, data-ng-class="{active: $location.path()=='/'}")
           a(href='/') Home
-        li(class=title=='API Browser'?'active':undefined, data-ng-class="{active: $location.path()=='/api'}")
-          a(href='/api') API Browser
-        li(class=title=='Contact'?'active':undefined)
-          a(href='/contact',target='_self') Contact
+        //li(class=title=='API Browser'?'active':undefined, data-ng-class="{active: $location.path()=='/api'}")
+        //  a(href='/api') API Browser
+        //li(class=title=='Contact'?'active':undefined)
+        //  a(href='/contact',target='_self') Contact
       ul.nav.navbar-nav.navbar-right
         if !user
           li(class=title=='Login'?'active':undefined)
