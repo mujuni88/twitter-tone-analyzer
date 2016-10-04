@@ -48,6 +48,7 @@ const app = express();
 /**
  * Connect to MongoDB.
  */
+console.log(require('./config/secrets').db);
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
 mongoose.connection.on('connected', () => {

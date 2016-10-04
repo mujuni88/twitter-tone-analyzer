@@ -1,6 +1,6 @@
 var MONGO_ADDR = process.env.MONGO_PORT_27017_TCP_ADDR || 'localhost';
 var MONGO_PORT = process.env.MONGO_PORT_27017_TCP_PORT || 27017;
-var uri = 'mongodb://test:test@ds049476.mlab.com:49476/tone-analyzer';
+var uri = `mongodb://${MONGO_ADDR}:${MONGO_PORT}/tone-analyzer`;
 module.exports = {
   db: uri,
 
