@@ -255,12 +255,12 @@ exports.getTwitter = (req, res, next) => {
     access_token: token.accessToken,
     access_token_secret: token.tokenSecret
   });
-  T.get('search/tweets', { q: 'nodejs since:2013-01-01', geocode: '40.71448,-74.00598,5mi', count: 10 }, (err, reply) => {
-    if (err) { return next(err); }
-    res.render('api/twitter', {
-      title: 'Twitter API',
-      tweets: reply.statuses
-    });
+  var query = req.params.query ? req.params.query : "#debatenight";
+  console.log(query);
+  T.get('search/tweets', { q: query,lang:'en',result_type:'mixed', count: 50 }, function(err, reply) {
+    if (err) return next(err);
+    req.tweets = reply.statuses;
+    next();
   });
 };
 
