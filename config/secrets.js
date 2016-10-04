@@ -1,5 +1,8 @@
+var MONGO_ADDR = process.env.MONGO_PORT_27017_TCP_ADDR || 'localhost';
+var MONGO_PORT = process.env.MONGO_PORT_27017_TCP_PORT || 27017;
+var uri = 'mongodb://test:test@ds049476.mlab.com:49476/tone-analyzer';
 module.exports = {
-  db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'localhost',
+  db: uri,
 
   sendgrid: {
     user: 'Your SendGrid Username',

@@ -1,0 +1,14 @@
+mongo:
+  image: mongo:latest
+  ports:
+   - "27017:27017"
+application:
+  build: .
+  command:  node --debug=5858 app.js --color=always
+  ports:
+   - "3000:3000"
+   - "5858:5858"
+  volumes :
+  - ./:/usr/src/app
+  links:
+   - mongo

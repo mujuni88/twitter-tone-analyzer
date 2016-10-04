@@ -1,135 +1,202 @@
 /**
  * Module dependencies.
  */
-
-var express = require('express');
-var MongoStore = require('connect-mongo')(express);
-var flash = require('express-flash');
-var less = require('less-middleware');
-var path = require('path');
-var mongoose = require('mongoose');
-var passport = require('passport');
-var expressValidator = require('express-validator');
-
-
-/**
- * Load controllers.
- */
-
-var homeController = require('./controllers/home');
-var userController = require('./controllers/user');
-var apiController = require('./controllers/api');
-var itemController = require('./controllers/item');
-var contactController = require('./controllers/contact');
-var toneController = require('./controllers/tone-analyzer');
+const express = require('express');
+const compression = require('compression');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const chalk = require('chalk');
+const errorHandler = require('errorhandler');
+const lusca = require('lusca');
+const dotenv = require('dotenv');
+const MongoStore = require('connect-mongo')(session);
+const flash = require('express-flash');
+const path = require('path');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const expressValidator = require('express-validator');
+const expressStatusMonitor = require('express-status-monitor');
+const sass = require('node-sass-middleware');
+const multer = require('multer');
+const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
 /**
- * API keys + Passport configuration.
+ * Load environment variables from .env file, where API keys and passwords are configured.
  */
-
-var secrets = require('./config/secrets');
-var passportConf = require('./config/passport');
+dotenv.load({ path: '.env.example' });
 
 /**
- * Mongoose configuration.
+ * Controllers (route handlers).
  */
+const homeController = require('./controllers/home');
+const userController = require('./controllers/user');
+const apiController = require('./controllers/api');
+const contactController = require('./controllers/contact');
+const toneController = require('./controllers/tone-analyzer');
 
-mongoose.connect(secrets.db);
-mongoose.connection.on('error', function() {
-  console.log('✗ MongoDB Connection Error. Please make sure MongoDB is running.'.red);
+/**
+ * API keys and Passport configuration.
+ */
+const passportConfig = require('./config/passport');
+
+/**
+ * Create Express server.
+ */
+const app = express();
+
+/**
+ * Connect to MongoDB.
+ */
+mongoose.Promise = global.Promise;
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
+mongoose.connection.on('connected', () => {
+  console.log('%s MongoDB connection established!', chalk.green('✓'));
 });
-
-var app = express();
+mongoose.connection.on('error', () => {
+  console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
+  process.exit();
+});
 
 /**
  * Express configuration.
  */
-app.locals.cacheBuster = Date.now();
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(express.compress());
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.cookieParser());
-app.use(express.json());
-app.use(express.urlencoded());
+app.set('view engine', 'pug');
+app.use(expressStatusMonitor());
+app.use(compression());
+app.use(sass({
+  src: path.join(__dirname, 'public'),
+  dest: path.join(__dirname, 'public')
+}));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressValidator());
-app.use(express.methodOverride());
-app.use(express.session({
-  secret: 'your secret code',
+app.use(session({
+  resave: true,
+  saveUninitialized: true,
+  secret: process.env.SESSION_SECRET,
   store: new MongoStore({
-    db: secrets.db
+    url: process.env.MONGODB_URI || process.env.MONGOLAB_URI,
+    autoReconnect: true
   })
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(function(req, res, next) {
+app.use(flash());
+app.use((req, res, next) => {
+  if (req.path === '/api/upload') {
+    next();
+  } else {
+    lusca.csrf()(req, res, next);
+  }
+});
+app.use(lusca.xframe('SAMEORIGIN'));
+app.use(lusca.xssProtection(true));
+app.use((req, res, next) => {
   res.locals.user = req.user;
   next();
 });
-app.use(flash());
-app.use(less({ src: __dirname + '/public', compress: true }));
-app.use(app.router);
-app.use(express.static( path.join(__dirname, 'public'), { maxAge: 864000000 } ));
-app.use(function(req, res) {
-  res.render('404', { status: 404 });
+app.use(function(req, res, next) {
+  // After successful login, redirect back to the intended page
+  if (!req.user &&
+      req.path !== '/login' &&
+      req.path !== '/signup' &&
+      !req.path.match(/^\/auth/) &&
+      !req.path.match(/\./)) {
+    req.session.returnTo = req.path;
+  }
+  next();
 });
-app.use(express.errorHandler());
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 
 /**
- * Application routes.
+ * Primary app routes.
  */
-
 app.get('/', homeController.index);
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
+app.get('/forgot', userController.getForgot);
+app.post('/forgot', userController.postForgot);
+app.get('/reset/:token', userController.getReset);
+app.post('/reset/:token', userController.postReset);
 app.get('/signup', userController.getSignup);
 app.post('/signup', userController.postSignup);
 app.get('/contact', contactController.getContact);
 app.post('/contact', contactController.postContact);
-app.get('/account', passportConf.isAuthenticated, userController.getAccount);
-app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
-app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
-app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
-app.get('/api', apiController.getApi);
-app.get('/api/foursquare', passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getFoursquare);
-app.get('/api/tumblr', passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getTumblr);
-app.get('/api/facebook', passportConf.isAuthenticated, apiController.getFacebook);
-app.get('/api/scraping', apiController.getScraping);
-app.get('/api/github', passportConf.isAuthenticated, passportConf.isAuthorized, apiController.getGithub);
-app.get('/api/lastfm', apiController.getLastfm);
-app.get('/api/nyt', apiController.getNewYorkTimes);
-app.get('/api/twitter/:query', passportConf.isAuthenticated, apiController.getTwitter, toneController.getToneAnalysis);
-app.get('/api/aviary', apiController.getAviary);
-app.get('/api/paypal', apiController.getPayPal);
-app.get('/api/paypal/success', apiController.getPayPalSuccess);
-app.get('/api/paypal/cancel', apiController.getPayPalCancel);
-app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email, user_about_me' }));
-app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }));
-app.get('/auth/github', passport.authenticate('github'));
-app.get('/auth/github/callback', passport.authenticate('github', { successRedirect: '/', failureRedirect: '/login' }));
-app.get('/auth/google', passport.authenticate('google', { scope: 'profile email' }));
-app.get('/auth/google/callback', passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' }));
-app.get('/auth/twitter', passport.authenticate('twitter'));
-app.get('/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' }));
-app.get('/auth/foursquare', passport.authorize('foursquare'));
-app.get('/auth/foursquare/callback', passport.authorize('foursquare', { failureRedirect: '/api' }), function(req, res) { res.redirect('/api/foursquare'); });
-app.get('/auth/tumblr', passport.authorize('tumblr'));
-app.get('/auth/tumblr/callback', passport.authorize('tumblr', { failureRedirect: '/api' }), function(req, res) { res.redirect('/api/tumblr'); });
+app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
+app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
+app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
+app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
+app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
 
 /**
- * Sample crud 
+ * API examples routes.
  */
+app.get('/api', apiController.getApi);
+app.get('/api/twitter/:query', passportConfig.isAuthenticated, apiController.getTwitter, toneController.getToneAnalysis);
 
-app.get('/api/item', itemController.getItems);
-app.get('/api/item/:id', itemController.getItem);
-app.post('/api/item', itemController.postItem);
-app.delete('/api/item/:id', itemController.deleteItem);
-
-
-app.listen(app.get('port'), function() {
-  console.log('✔ Express server listening on port ' + app.get('port'));
+/**
+ * OAuth authentication routes. (Sign in)
+ */
+app.get('/auth/instagram', passport.authenticate('instagram'));
+app.get('/auth/instagram/callback', passport.authenticate('instagram', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect(req.session.returnTo || '/');
 });
+app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'user_location'] }));
+app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect(req.session.returnTo || '/');
+});
+app.get('/auth/github', passport.authenticate('github'));
+app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect(req.session.returnTo || '/');
+});
+app.get('/auth/google', passport.authenticate('google', { scope: 'profile email' }));
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect(req.session.returnTo || '/');
+});
+app.get('/auth/twitter', passport.authenticate('twitter'));
+app.get('/auth/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect(req.session.returnTo || '/');
+});
+app.get('/auth/linkedin', passport.authenticate('linkedin', { state: 'SOME STATE' }));
+app.get('/auth/linkedin/callback', passport.authenticate('linkedin', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect(req.session.returnTo || '/');
+});
+
+/**
+ * OAuth authorization routes. (API examples)
+ */
+app.get('/auth/foursquare', passport.authorize('foursquare'));
+app.get('/auth/foursquare/callback', passport.authorize('foursquare', { failureRedirect: '/api' }), (req, res) => {
+  res.redirect('/api/foursquare');
+});
+app.get('/auth/tumblr', passport.authorize('tumblr'));
+app.get('/auth/tumblr/callback', passport.authorize('tumblr', { failureRedirect: '/api' }), (req, res) => {
+  res.redirect('/api/tumblr');
+});
+app.get('/auth/steam', passport.authorize('openid', { state: 'SOME STATE' }));
+app.get('/auth/steam/callback', passport.authorize('openid', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect(req.session.returnTo || '/');
+});
+app.get('/auth/pinterest', passport.authorize('pinterest', { scope: 'read_public write_public' }));
+app.get('/auth/pinterest/callback', passport.authorize('pinterest', { failureRedirect: '/login' }), (req, res) => {
+  res.redirect('/api/pinterest');
+});
+
+/**
+ * Error Handler.
+ */
+app.use(errorHandler());
+
+/**
+ * Start Express server.
+ */
+app.listen(app.get('port'), () => {
+  console.log('%s Express server listening on port %d in %s mode.', chalk.green('✓'), app.get('port'), app.get('env'));
+});
+
+module.exports = app;
